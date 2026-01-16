@@ -1,9 +1,33 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36511.14 d17.14
+VisualStudioVersion = 17.14.36511.14
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMS.Core", "SatouEdu.Core\LMS.Core.csproj", "{792E34CD-F90B-4398-96FF-4D88FA109CE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMS.Infrastructure", "SatouEdu.Infrastructure\LMS.Infrastructure.csproj", "{CDC2D824-BA8D-4D2B-908E-871C2E413714}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMS.API", "SatouEdu.API\LMS.API.csproj", "{344FE770-5F76-465D-95B1-EF57AA86A762}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{792E34CD-F90B-4398-96FF-4D88FA109CE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{792E34CD-F90B-4398-96FF-4D88FA109CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{792E34CD-F90B-4398-96FF-4D88FA109CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{792E34CD-F90B-4398-96FF-4D88FA109CE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDC2D824-BA8D-4D2B-908E-871C2E413714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDC2D824-BA8D-4D2B-908E-871C2E413714}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDC2D824-BA8D-4D2B-908E-871C2E413714}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDC2D824-BA8D-4D2B-908E-871C2E413714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{344FE770-5F76-465D-95B1-EF57AA86A762}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{344FE770-5F76-465D-95B1-EF57AA86A762}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{344FE770-5F76-465D-95B1-EF57AA86A762}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{344FE770-5F76-465D-95B1-EF57AA86A762}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
