@@ -1,6 +1,7 @@
 ﻿using LMS.API.DTOs;
 using LMS.Core.Entities;
 using LMS.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,7 @@ namespace LMS.API.Controllers
             return Ok(new {Message = "Role created successfully.", RoleId = newRole.Id });
         }
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllRoles()
         {
             var roles = await _context.Roles.ToListAsync();
