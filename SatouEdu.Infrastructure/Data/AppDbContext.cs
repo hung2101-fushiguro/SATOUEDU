@@ -20,6 +20,8 @@ namespace LMS.Infrastructure.Data
         public DbSet<User> Users { get; set; }
         public DbSet<ClassRoom> ClassRooms { get; set; }
         public DbSet<ClassEnrollment> ClassEnrollments { get; set; }
+        public DbSet<Assignment> Assignments { get; set; }// Them DbSet cho Assignment
+        public DbSet<Submission> Submissions { get; set; }// Them DbSet cho Submission
 
         // Cấu hình nâng cao (Fluent API)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,6 +51,25 @@ namespace LMS.Infrastructure.Data
                 .HasOne(ce => ce.Student)
                 .WithMany().HasForeignKey(ce => ce.StudentId)
                 .OnDelete(DeleteBehavior.Restrict);// Khi học sinh bị xóa, không xóa các ghi danh liên quan
+
+            modelBuilder.Entity<Assignment>()
+                .HasOne(a => a.ClassRoom)// 1 bài tập có 1 lớp học
+                .WithMany()// 1 lớp học có nhiều bài tập
+                .HasForeignKey(a => a.ClassRoomId)// Khóa ngoại
+                .OnDelete(DeleteBehavior.Cascade); // Khi lớp học bị xóa, các bài tập liên quan cũng bị xóa
+                                                   
+            modelBuilder.Entity<Submission>()
+                .HasOne(s => s.Assignment)
+                .WithMany()
+                .HasForeignKey(s => s.AssignmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // 2. Quan hệ Học sinh - Bài nộp: Xóa học sinh -> DỪNG LẠI (Sửa thành Restrict để tránh lỗi)
+            modelBuilder.Entity<Submission>()
+                .HasOne(s => s.Student)
+                .WithMany()
+                .HasForeignKey(s => s.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
