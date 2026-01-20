@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống LMS</title>
+    <style>
+        /* CSS đơn giản để nhìn cho đẹp mắt */
+        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding-top: 50px; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 400px; }
+        
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px;}
+        button:hover { background-color: #0056b3; }
+        
+        h2 { text-align: center; color: #333; }
+        .hidden { display: none; } /* Class dùng để ẩn hiện màn hình */
+        
+        .assignment-card { background: #e9ecef; padding: 10px; margin-bottom: 10px; border-left: 5px solid #28a745; }
+        .error { color: red; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="login-screen">
+            <h2>🔐 Đăng Nhập</h2>
+            <input type="text" id="email" placeholder="Email (Ví dụ: hocsinh@gmail.com)" value="hocsinh@gmail.com">
+            <input type="password" id="password" placeholder="Mật khẩu" value="matkhau123">
+            <button onclick="handleLogin()">Đăng Nhập</button>
+            <div id="login-error" class="error"></div>
+        </div>
+
+        <div id="app-screen" class="hidden">
+            <h2>📚 Bài Tập Của Tôi</h2>
+            <p style="text-align:center; color:green">Xin chào! Bạn đã đăng nhập.</p>
+            
+            <label>Nhập ID Lớp học:</label>
+            <input type="number" id="classId" placeholder="Ví dụ: 1" value="1">
+            <button onclick="loadAssignments()" style="background-color: #28a745;">Xem Danh Sách</button>
+            <button onclick="logout()" style="background-color: #6c757d; margin-top: 5px;">Đăng Xuất</button>
+
+            <hr>
+            <div id="list-result">
+                </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- CẤU HÌNH ---
+        // QUAN TRỌNG: Thay số 7056 bằng cổng API của bạn
+        const BASE_URL = "https://localhost:7063/api"; 
+        
+        let myToken = ""; // Biến để lưu chìa khóa sau khi đăng nhập
+
+        // 1. HÀM ĐĂNG NHẬP
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('login-error');
+
+            errorDiv.innerText = "Đang kết nối...";
+
+            try {
+                // Gọi API Login
+                const response = await fetch(`${BASE_URL}/Auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    myToken = data.token; // Lưu token lại
+                    
+                    // Chuyển màn hình: Ẩn Login -> Hiện App
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('app-screen').classList.remove('hidden');
+                    errorDiv.innerText = "";
+                } else {
+                    errorDiv.innerText = "Sai tài khoản hoặc mật khẩu!";
+                }
+            } catch (err) {
+                console.error(err);
+                errorDiv.innerText = "Không kết nối được tới Server!";
+            }
+        }
+
+        // 2. HÀM LẤY BÀI TẬP
+        async function loadAssignments() {
+            const classId = document.getElementById('classId').value;
+            const resultDiv = document.getElementById('list-result');
+            
+            resultDiv.innerHTML = "Đang tải...";
+
+            try {
+                // Gọi API Lấy bài tập
+                const response = await fetch(`${BASE_URL}/Assignments/class/${classId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${myToken}` // <--- GỬI KÈM TOKEN Ở ĐÂY
+                    }
+                });
+
+                if (response.ok) {
+                    const list = await response.json();
+                    
+                    if(list.length === 0) {
+                        resultDiv.innerHTML = "<p>Lớp này chưa có bài tập nào.</p>";
+                        return;
+                    }
+
+                    // Xóa nội dung cũ và vẽ danh sách mới
+                    resultDiv.innerHTML = ""; 
+                    list.forEach(baiTap => {
+                        // Tạo HTML cho từng bài tập
+                        const item = `
+                            <div class="assignment-card">
+                                <b>${baiTap.title}</b>
+                                <p>${baiTap.description}</p>
+                                <small>Hạn nộp: ${baiTap.dueDate}</small>
+                            </div>
+                        `;
+                        resultDiv.innerHTML += item;
+                    });
+                } else {
+                    // Nếu bị lỗi (401, 403)
+                    const msg = await response.text();
+                    resultDiv.innerHTML = `<p style="color:red">❌ Lỗi: ${msg}</p>`;
+                }
+
+            } catch (err) {
+                resultDiv.innerHTML = "Lỗi hệ thống!";
+            }
+        }
+
+        // 3. HÀM ĐĂNG XUẤT
+        function logout() {
+            myToken = "";
+            document.getElementById('app-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
